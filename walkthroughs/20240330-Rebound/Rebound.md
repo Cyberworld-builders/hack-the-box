@@ -4,11 +4,37 @@
 - ***Hacker:*** IppSec
 - ***Operating System:*** Windows
 
-## Notes
-- Lots of Active Directory
-- 
+## Details
+- All pure Active Directory.
+- No web exploitation.
+- No ADCS attacks either.
 
-# Table of Contents
+## Summary
+1. RID brute force to get an AS reproast-able account, however, you can't crack the hash.
+2. Instead, you use this config to perform a Cerberos attack, which normally requires credentials. This gets you the hash to a different service which you can crack.
+3. From there, we find a well-hidden bloudhound path to reset an account to get onto the system where there's another user logged into the box.
+4. Use a cross-session relay attack with remote potato to get their NTLM hash which leads us to be able to read AGMSA password that a group-managed service account but it has constrained delegation.
+5. Because of the constrained delegation, we can't create a forwardable-ticket with the group-managed service account. However, we can abuse role-based constrained delegation to create a forwardable service ticket and then create a TGS with the two tickets that enables us to impersonate the DC and do a DC-sync.
+
+
+## Tools, Tech, and Concepts
+
+### Nmap
+Nmap, short for Network Mapper, is a widely used open-source tool for network discovery and security auditing. It's designed to help users explore networks, identify what devices are running on those networks (host discovery), discover services and applications running on those devices (service discovery), and gather information about those services (port scanning, version detection, etc.).
+
+### NetExec
+NetExec is a tool used for executing commands remotely on Windows systems. It allows a user to execute commands or scripts on a remote machine over the network. This tool can be particularly useful for system administrators who need to manage multiple machines in a networked environment.
+
+NetExec typically operates by leveraging the administrative capabilities of Windows systems, such as the ability to execute commands remotely using built-in administrative features like Windows Management Instrumentation (WMI) or remote command execution services like Remote Procedure Call (RPC).
+
+While NetExec itself may not be a specific tool provided by Microsoft or another vendor, there are various implementations and scripts available that offer similar functionality under the name "NetExec" or similar. These implementations may vary in features and compatibility with different versions of Windows.
+
+Overall, NetExec is used to streamline administrative tasks by allowing commands or scripts to be executed on remote Windows systems without needing physical access to those machines.
+
+### SMB (Server Message Block)
+It's a network protocol used mainly for providing shared access to files, printers, and serial ports and miscellaneous communications between nodes on a network. It's commonly used in Windows networks.
+
+## Table of Contents
 
 - [00:00 - Introduction](#introduction)
 - [01:07 - Start of nmap then checking SMB Shares](#start-of-nmap-then-checking-smb-shares)
@@ -32,6 +58,33 @@
 
 ## Start of nmap then checking SMB Shares
 [01:07 - Start of nmap then checking SMB Shares](https://www.youtube.com/watch?v=oUIoH4yBT3k&t=67s)
+
+### Enumerate services
+```bash
+sudo nmap -sC -sV -oA nmap/rebound 10.10.11.231
+```
+
+### Results
+```bash
+less nmap/rebound
+
+
+
+```
+
+### Add Domains to Hosts file and Scan again
+```bash
+vi nmap/rebound
+
+10.10.11.231    rebound.htb dc01.rebound.htb
+
+sudo nmap -sC -sV -oA nmap/rebound 10.10.11.231
+```
+
+
+```bash
+netexec smb 10.10.11.31
+```
 
 ## Using NetExec to do a RID Brute Force and increase the maximum to 10000
 [04:05 - Using NetExec to do a RID Brute Force and increase the maximum to 10000](https://www.youtube.com/watch?v=oUIoH4yBT3k&t=245s)
