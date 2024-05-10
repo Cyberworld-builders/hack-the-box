@@ -1,7 +1,14 @@
 # Rebound
 
+## Info
+- ***Hacker:*** IppSec
+- ***Operating System:*** Windows
 
+## Notes
+- Lots of Active Directory
+- 
 
+## Contents
 - [00:00 - Introduction](#00:00---introduction)
 - [01:07 - Start of nmap then checking SMB Shares](#01:07---start-of-nmap-then-checking-smb-shares)
 - [04:05 - Using NetExec to do a RID Brute Force and increase the maximum to 10000](#04:05---using-netexec-to-do-a-rid-brute-force-and-increase-the-maximum-to-10000)
